@@ -1,31 +1,34 @@
 {
-  "name": "typescript-action",
+  "name": "create-loft-vcluster",
   "version": "0.0.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "GitHub Action to create a Loft VCluster",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
-    "package": "ncc build --source-map --license licenses.txt",
+    "package": "npm run package:main && npm run package:post",
+    "package:main": "ncc build lib/main.js --source-map --license licenses.txt --out dist/main",
+    "package:post": "ncc build lib/post.js --source-map --license licenses.txt --out dist/post",
     "test": "jest",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/lizardruss/create-loft-vcluster.git"
   },
   "keywords": [
     "actions",
-    "node",
-    "setup"
+    "loft",
+    "vcluster"
   ],
-  "author": "",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.4.0"
+    "@actions/core": "^1.4.0",
+    "@actions/exec": "^1.1.0",
+    "@actions/io": "^1.1.1"
   },
   "devDependencies": {
     "@types/node": "^16.3.3",

@@ -1,11 +1,37 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Create Loft VCluster'
+description: 'GitHub Action to create a Loft VCluster'
+author: loft.sh
 inputs:
-  milliseconds: # change this
+  name:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'The name of the virtual cluster to create'
+  account:
+    required: false
+    description: The cluster account to create the virtual cluster with if it doesn't exist
+  cluster:
+    required: false
+    description: 'The cluster to create the virtual cluster in'
+  space:
+    required: false
+    description: 'The space to create the virtual cluster in'
+  delete-after:
+    required: false
+    description: 'If set to non zero, will tell loft to delete the space after specified seconds of inactivity'
+  sleep-after:
+    required: false
+    description: 'If set to non zero, will tell the space to sleep after specified seconds of inactivity'
+  disable-direct-cluster-endpoint:
+    required: false
+    description: 'When enabled does not use an available direct cluster endpoint to connect to the vcluster'
+  post-delete-vcluster:
+    required: false
+    description: 'Delete the virtual cluster after the job run (default true)'
+    default: 'true'
+  post-delete-space:
+    required: false
+    description: 'Delete the space after the job run (default true)'
+    default: 'true'
 runs:
   using: 'node12'
-  main: 'dist/index.js'
+  main: 'dist/main/index.js'
+  post: 'dist/post/index.js'
