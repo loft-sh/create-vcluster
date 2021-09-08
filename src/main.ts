@@ -1,16 +1,30 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {exec} from '@actions/exec'
+import {which} from '@actions/io'
+import {ArgsBuilder} from './args-builder'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
+    const name: string = core.getInput('name', {required: true})
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    // Check that the loft CLI is installed
+    await which('loft', true)
 
-    core.setOutput('time', new Date().toTimeString())
+    const args: ArgsBuilder = new ArgsBuilder()
+    args.addSubcommand('create')
+    args.addSubcommand('vcluster')
+    args.addSubcommand(name)
+    args.add('account', core.getInput('account'))
+    args.add('cluster', core.getInput('cluster'))
+    args.add('space', core.getInput('space'))
+    args.addNumeric('delete-after', core.getInput('delete-after'))
+    args.addNumeric('sleep-after', core.getInput('sleep-after'))
+    args.addFlag(
+      'disable-direct-cluster-endpoint',
+      core.getInput('disable-direct-cluster-endpoint')
+    )
+
+    await exec('loft', args.build())
   } catch (error) {
     core.setFailed(error.message)
   }
