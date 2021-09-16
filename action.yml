@@ -23,14 +23,14 @@ inputs:
   disable-direct-cluster-endpoint:
     required: false
     description: 'When enabled does not use an available direct cluster endpoint to connect to the vcluster'
-  post-delete-vcluster:
+  auto-cleanup:
     required: false
-    description: 'Delete the virtual cluster after the job run (default true)'
-    default: 'true'
-  post-delete-space:
+    description: 'Delete the virtual cluster after the job run (default false)'
+    default: false
+  auto-cleanup-space:
     required: false
-    description: 'Delete the space after the job run (default true)'
-    default: 'true'
+    description: 'Delete the space after the job run (default to same value as auto-cleanup)'
+    default: true
 runs:
   using: 'node12'
   main: 'dist/main/index.js'

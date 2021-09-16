@@ -1,8 +1,6 @@
-import {ArgsBuilder} from '../src/args-builder'
-import * as process from 'process'
-import * as cp from 'child_process'
-import * as path from 'path'
 import {describe, expect, test} from '@jest/globals'
+
+import {ArgsBuilder} from '../src/args-builder'
 
 describe('ArgsBuilder', () => {
   describe('#addSubcommand(name: string)', () => {

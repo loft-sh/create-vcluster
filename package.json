@@ -1,5 +1,5 @@
 {
-  "name": "create-loft-vcluster",
+  "name": "create-vcluster",
   "version": "0.0.0",
   "private": true,
   "description": "GitHub Action to create a Loft VCluster",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lizardruss/create-loft-vcluster.git"
+    "url": "git+https://github.com/loft-sh/create-vcluster.git"
   },
   "keywords": [
     "actions",

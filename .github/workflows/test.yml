@@ -22,7 +22,7 @@ jobs:
   #     - uses: ./
   #       continue-on-error: true
   #       with:
-  #         name: mycluster-${{ matrix.os }}
+  #         name: create-mycluster-${{ matrix.os }}
   #     - run: loft list spaces
   test-automatic-delete:
     strategy:
@@ -33,92 +33,92 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-${{ matrix.os }}
+          name: create-mycluster-${{ matrix.os }}
       - run: loft list vclusters
   test-manual-delete:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-manual-delete
-          post-delete-vcluster: false
+          name: create-mycluster-manual-delete
+          auto-cleanup: false
       - run: loft list vclusters
       - run: loft delete vcluster mycluster-manual-delete --delete-space
   test-manual-delete-space-warning:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-manual-delete-warning
-          post-delete-vcluster: false
-          post-delete-space: true
+          name: create-mycluster-manual-delete-warning
+          auto-cleanup: false
+          auto-cleanup-space: true
       - run: loft list vclusters
       - run: loft delete vcluster mycluster-manual-delete-warning --delete-space
   test-space:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-space
+          name: create-mycluster-space
           space: test-create-loft-vcluster
       - run: loft list vclusters
   test-delete-after:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-delete-after
+          name: create-mycluster-delete-after
           delete-after: 3600
       - run: loft list vclusters
   test-sleep-after:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-sleep-after
+          name: create-mycluster-sleep-after
           sleep-after: 60
       - run: loft list vclusters
   test-disable-direct-cluster-endpoint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-disable-direct-cluster-endpoint
+          name: create-mycluster-disable-direct-cluster-endpoint
           disable-direct-cluster-endpoint: true
       - run: loft list vclusters

@@ -98,12 +98,12 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const name = core.getInput('name', { required: true });
-            const postDeleteVCluster = core.getBooleanInput('post-delete-vcluster');
-            const postDeleteSpace = core.getBooleanInput('post-delete-space');
-            if (postDeleteSpace && !postDeleteVCluster) {
-                core.warning('Using post-delete-space: true and post-delete-vcluster: false has no effect.');
+            const autoCleanupVCluster = core.getBooleanInput('auto-cleanup');
+            const autoCleanupSpace = core.getBooleanInput('auto-cleanup-space') || autoCleanupVCluster;
+            if (autoCleanupSpace && !autoCleanupVCluster) {
+                core.warning('Using auto-cleanup-space: true and auto-cleanup: false has no effect.');
             }
-            if (postDeleteVCluster) {
+            if (autoCleanupVCluster) {
                 const args = new args_builder_1.ArgsBuilder();
                 args.addSubcommand('delete');
                 args.addSubcommand('vcluster');
@@ -111,7 +111,7 @@ function run() {
                 args.add('cluster', core.getInput('cluster'));
                 args.add('space', core.getInput('space'));
                 args.addFlag('delete-context', true);
-                args.addFlag('delete-space', postDeleteSpace);
+                args.addFlag('delete-space', autoCleanupSpace);
                 yield exec_1.exec('loft', args.build());
             }
         }

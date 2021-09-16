@@ -6,18 +6,17 @@ import {ArgsBuilder} from './args-builder'
 async function run(): Promise<void> {
   try {
     const name: string = core.getInput('name', {required: true})
-    const postDeleteVCluster: boolean = core.getBooleanInput(
-      'post-delete-vcluster'
-    )
-    const postDeleteSpace: boolean = core.getBooleanInput('post-delete-space')
+    const autoCleanupVCluster: boolean = core.getBooleanInput('auto-cleanup')
+    const autoCleanupSpace: boolean =
+      core.getBooleanInput('auto-cleanup-space') || autoCleanupVCluster
 
-    if (postDeleteSpace && !postDeleteVCluster) {
+    if (autoCleanupSpace && !autoCleanupVCluster) {
       core.warning(
-        'Using post-delete-space: true and post-delete-vcluster: false has no effect.'
+        'Using auto-cleanup-space: true and auto-cleanup: false has no effect.'
       )
     }
 
-    if (postDeleteVCluster) {
+    if (autoCleanupVCluster) {
       const args: ArgsBuilder = new ArgsBuilder()
       args.addSubcommand('delete')
       args.addSubcommand('vcluster')
@@ -25,7 +24,7 @@ async function run(): Promise<void> {
       args.add('cluster', core.getInput('cluster'))
       args.add('space', core.getInput('space'))
       args.addFlag('delete-context', true)
-      args.addFlag('delete-space', postDeleteSpace)
+      args.addFlag('delete-space', autoCleanupSpace)
       await exec('loft', args.build())
     }
   } catch (error) {
