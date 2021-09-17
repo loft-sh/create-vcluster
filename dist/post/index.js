@@ -99,7 +99,13 @@ function run() {
         try {
             const name = core.getInput('name', { required: true });
             const autoCleanupVCluster = core.getBooleanInput('auto-cleanup');
-            const autoCleanupSpace = core.getBooleanInput('auto-cleanup-space') || autoCleanupVCluster;
+            let autoCleanupSpace = false;
+            if (!core.getInput('auto-cleanup-space')) {
+                autoCleanupSpace = autoCleanupVCluster;
+            }
+            else {
+                autoCleanupSpace = core.getBooleanInput('auto-cleanup-space');
+            }
             if (autoCleanupSpace && !autoCleanupVCluster) {
                 core.warning('Using auto-cleanup-space: true and auto-cleanup: false has no effect.');
             }

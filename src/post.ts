@@ -7,8 +7,12 @@ async function run(): Promise<void> {
   try {
     const name: string = core.getInput('name', {required: true})
     const autoCleanupVCluster: boolean = core.getBooleanInput('auto-cleanup')
-    const autoCleanupSpace: boolean =
-      core.getBooleanInput('auto-cleanup-space') || autoCleanupVCluster
+    let autoCleanupSpace = false
+    if (!core.getInput('auto-cleanup-space')) {
+      autoCleanupSpace = autoCleanupVCluster
+    } else {
+      autoCleanupSpace = core.getBooleanInput('auto-cleanup-space')
+    }
 
     if (autoCleanupSpace && !autoCleanupVCluster) {
       core.warning(

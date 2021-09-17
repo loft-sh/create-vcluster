@@ -30,7 +30,6 @@ inputs:
   auto-cleanup-space:
     required: false
     description: 'Delete the space after the job run (default to same value as auto-cleanup)'
-    default: true
 runs:
   using: 'node12'
   main: 'dist/main/index.js'
