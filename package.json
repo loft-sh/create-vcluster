@@ -1,5 +1,5 @@
 {
-  "name": "create-loft-vcluster",
+  "name": "create-vcluster",
   "version": "0.0.0",
   "private": true,
   "description": "GitHub Action to create a Loft VCluster",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lizardruss/create-loft-vcluster.git"
+    "url": "git+https://github.com/loft-sh/create-vcluster.git"
   },
   "keywords": [
     "actions",
@@ -36,7 +36,7 @@
     "@vercel/ncc": "^0.29.0",
     "eslint": "^7.31.0",
     "eslint-plugin-github": "^4.1.1",
-    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-jest": "^24.4.2",
     "jest": "^27.0.6",
     "js-yaml": "^4.1.0",
     "prettier": "2.2.1",
