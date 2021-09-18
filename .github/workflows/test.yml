@@ -5,7 +5,6 @@ on:
     branches:
       - main
       - 'releases/*'
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,6 +14,13 @@ jobs:
           npm install
       - run: |
           npm run all
+  vcluster_id:
+    runs-on: ubuntu-latest
+    steps:
+      - id: vcluster_id
+        run: echo "::set-output name=id::$(uuidgen)"
+    outputs:
+      vcluster_id: ${{ steps.vcluster_id.outputs.id }}
   # test-error-without-loft:
   #   runs-on: ubuntu-latest
   #   steps:
@@ -22,9 +28,11 @@ jobs:
   #     - uses: ./
   #       continue-on-error: true
   #       with:
-  #         name: mycluster-${{ matrix.os }}
+  #         name: create-mycluster-${{ matrix.os }}
   #     - run: loft list spaces
-  test-automatic-delete:
+  test-auto-cleanup-default:
+    needs:
+      - vcluster_id
     strategy:
       matrix:
         os:
@@ -33,92 +41,124 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-${{ matrix.os }}
+          name: ${{ matrix.os }}-${{ needs.vcluster_id.outputs.vcluster_id }}
       - run: loft list vclusters
-  test-manual-delete:
+      - run: loft delete vcluster ${{ matrix.os }}-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space
+  test-auto-cleanup-false:
+    needs:
+      - vcluster_id
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-manual-delete
-          post-delete-vcluster: false
+          name: cleanup-false-${{ needs.vcluster_id.outputs.vcluster_id }}
+          auto-cleanup: false
       - run: loft list vclusters
-      - run: loft delete vcluster mycluster-manual-delete --delete-space
-  test-manual-delete-space-warning:
+      - run: loft delete vcluster cleanup-false-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space
+  test-auto-cleanup-true:
+    needs:
+      - vcluster_id
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-manual-delete-warning
-          post-delete-vcluster: false
-          post-delete-space: true
+          name: cleanup-true-${{ needs.vcluster_id.outputs.vcluster_id }}
+          auto-cleanup: true
       - run: loft list vclusters
-      - run: loft delete vcluster mycluster-manual-delete-warning --delete-space
+  test-manual-cleanup-space-warning:
+    needs:
+      - vcluster_id
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: loft-sh/setup-loft@main
+        with:
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+      - uses: ./
+        with:
+          name: cleanup-warning-${{ needs.vcluster_id.outputs.vcluster_id }}
+          auto-cleanup: false
+          auto-cleanup-space: true
+      - run: loft list vclusters
+      - run: loft delete vcluster cleanup-warning-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space
   test-space:
+    needs:
+      - vcluster_id
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-space
-          space: test-create-loft-vcluster
+          name: vcluster-space-${{ needs.vcluster_id.outputs.vcluster_id }}
+          space: space-${{ needs.vcluster_id.outputs.vcluster_id }}
       - run: loft list vclusters
+      - run: loft delete vcluster vcluster-space-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space
   test-delete-after:
+    needs:
+      - vcluster_id
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-delete-after
-          delete-after: 3600
+          name: delete-after-${{ needs.vcluster_id.outputs.vcluster_id }}
+          delete-after: 60
       - run: loft list vclusters
+      - run: loft delete vcluster delete-after-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space
   test-sleep-after:
+    needs:
+      - vcluster_id
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-sleep-after
+          name: sleep-after-${{ needs.vcluster_id.outputs.vcluster_id }}
           sleep-after: 60
       - run: loft list vclusters
+      - run: loft delete vcluster sleep-after-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space
   test-disable-direct-cluster-endpoint:
+    needs:
+      - vcluster_id
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: lizardruss/install-loft-cli@main
+      - uses: loft-sh/setup-loft@main
         with:
-          loft-url: ${{ secrets.LOFT_URL }}
-          loft-access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
       - uses: ./
         with:
-          name: mycluster-disable-direct-cluster-endpoint
+          name: disable-endpoint-${{ needs.vcluster_id.outputs.vcluster_id }}
           disable-direct-cluster-endpoint: true
       - run: loft list vclusters
+      - run: loft delete vcluster disable-endpoint-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space
