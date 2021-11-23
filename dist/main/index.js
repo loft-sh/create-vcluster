@@ -90,11 +90,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
 const exec_1 = __nccwpck_require__(514);
 const io_1 = __nccwpck_require__(436);
+const fs_1 = __nccwpck_require__(747);
+const os_1 = __nccwpck_require__(87);
+const path_1 = __importDefault(__nccwpck_require__(622));
 const args_builder_1 = __nccwpck_require__(458);
+const { mkdtemp, writeFile } = fs_1.promises;
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -111,6 +118,16 @@ function run() {
             args.addNumeric('delete-after', core.getInput('delete-after'));
             args.addNumeric('sleep-after', core.getInput('sleep-after'));
             args.addFlag('disable-direct-cluster-endpoint', core.getInput('disable-direct-cluster-endpoint'));
+            args.add('team', core.getInput('team'));
+            args.add('user', core.getInput('user'));
+            args.add('template', core.getInput('template'));
+            const parameters = core.getInput('parameters');
+            if (parameters !== '') {
+                const tmpDir = yield mkdtemp(path_1.default.join(os_1.tmpdir(), 'loft-'));
+                const parametersFile = path_1.default.join(tmpDir, 'parameters.yaml');
+                yield writeFile(parametersFile, parameters);
+                args.add('parameters', parametersFile);
+            }
             yield exec_1.exec('loft', args.build());
         }
         catch (error) {

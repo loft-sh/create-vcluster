@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: vcluster_id
-        run: echo "::set-output name=id::$(uuidgen)"
+        run: echo "::set-output name=id::$RANDOM"
     outputs:
       vcluster_id: ${{ steps.vcluster_id.outputs.id }}
   # test-error-without-loft:
@@ -162,3 +162,26 @@ jobs:
           disable-direct-cluster-endpoint: true
       - run: loft list vclusters
       - run: loft delete vcluster disable-endpoint-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space
+  test-template:
+    needs:
+      - vcluster_id
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: loft-sh/setup-loft@main
+        with:
+          url: ${{ secrets.LOFT_URL }}
+          access-key: ${{ secrets.LOFT_ACCESS_KEY }}
+      - uses: ./
+        with:
+          name: template-${{ needs.vcluster_id.outputs.vcluster_id }}
+          template: example-template
+          user: russellcentanni
+          parameters: |
+            apps:
+            - name: example-manifests
+              parameters:
+                password: '${{ needs.vcluster_id.outputs.vcluster_id }}'
+                version: '8.0'
+      - run: loft list vclusters
+      - run: loft delete vcluster template-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space

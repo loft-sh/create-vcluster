@@ -1,7 +1,13 @@
 import * as core from '@actions/core'
 import {exec} from '@actions/exec'
 import {which} from '@actions/io'
+import {promises as fs} from 'fs'
+import {tmpdir} from 'os'
+import path from 'path'
+
 import {ArgsBuilder} from './args-builder'
+
+const {mkdtemp, writeFile} = fs
 
 async function run(): Promise<void> {
   try {
@@ -23,6 +29,17 @@ async function run(): Promise<void> {
       'disable-direct-cluster-endpoint',
       core.getInput('disable-direct-cluster-endpoint')
     )
+    args.add('team', core.getInput('team'))
+    args.add('user', core.getInput('user'))
+    args.add('template', core.getInput('template'))
+
+    const parameters = core.getInput('parameters')
+    if (parameters !== '') {
+      const tmpDir = await mkdtemp(path.join(tmpdir(), 'loft-'))
+      const parametersFile = path.join(tmpDir, 'parameters.yaml')
+      await writeFile(parametersFile, parameters)
+      args.add('parameters', parametersFile)
+    }
 
     await exec('loft', args.build())
   } catch (error) {
