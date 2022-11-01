@@ -18,7 +18,7 @@ describe('ArgsBuilder', () => {
 
     test('does not add undefined arg', () => {
       const args: ArgsBuilder = new ArgsBuilder()
-      args.addSubcommand((undefined as any) as string)
+      args.addSubcommand(undefined as any as string)
       expect(args.build()).toEqual([])
     })
   })
@@ -56,7 +56,7 @@ describe('ArgsBuilder', () => {
 
     test('does not add flag when null', () => {
       const args: ArgsBuilder = new ArgsBuilder()
-      args.addFlag('disable-direct-cluster-endpoint', (null as any) as string)
+      args.addFlag('disable-direct-cluster-endpoint', null as any as string)
       expect(args.build()).toEqual([])
     })
 
@@ -64,7 +64,7 @@ describe('ArgsBuilder', () => {
       const args: ArgsBuilder = new ArgsBuilder()
       args.addFlag(
         'disable-direct-cluster-endpoint',
-        (undefined as any) as string
+        undefined as any as string
       )
       expect(args.build()).toEqual([])
     })
@@ -92,7 +92,7 @@ describe('ArgsBuilder', () => {
 
     test('does not add undefined arg', () => {
       const args: ArgsBuilder = new ArgsBuilder()
-      args.addNumeric('sleep-after', (undefined as any) as string)
+      args.addNumeric('sleep-after', undefined as any as string)
       expect(args.build()).toEqual([])
     })
 
@@ -119,13 +119,13 @@ describe('ArgsBuilder', () => {
 
     test('does not add undefined arg', () => {
       const args: ArgsBuilder = new ArgsBuilder()
-      args.add('cluster', (undefined as any) as string)
+      args.add('cluster', undefined as any as string)
       expect(args.build()).toEqual([])
     })
 
     test('does not add null arg', () => {
       const args: ArgsBuilder = new ArgsBuilder()
-      args.add('cluster', (null as any) as string)
+      args.add('cluster', null as any as string)
       expect(args.build()).toEqual([])
     })
   })

@@ -31,8 +31,10 @@ async function run(): Promise<void> {
       args.addFlag('delete-space', autoCleanupSpace)
       await exec('loft', args.build())
     }
-  } catch (error) {
-    core.setFailed(error.message)
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      core.setFailed(error.message)
+    }
   }
 }
 
