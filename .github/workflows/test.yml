@@ -59,6 +59,7 @@ jobs:
   test-auto-cleanup-false:
     needs:
       - vcluster_id
+      - test-auto-cleanup-default
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -75,6 +76,7 @@ jobs:
   test-auto-cleanup-true:
     needs:
       - vcluster_id
+      - test-auto-cleanup-false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -90,6 +92,7 @@ jobs:
   test-manual-cleanup-space-warning:
     needs:
       - vcluster_id
+      - test-auto-cleanup-true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -107,6 +110,7 @@ jobs:
   test-space:
     needs:
       - vcluster_id
+      - test-manual-cleanup-space-warning
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -123,6 +127,7 @@ jobs:
   test-delete-after:
     needs:
       - vcluster_id
+      - test-space
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -139,6 +144,7 @@ jobs:
   test-sleep-after:
     needs:
       - vcluster_id
+      - test-delete-after
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -155,6 +161,7 @@ jobs:
   test-disable-direct-cluster-endpoint:
     needs:
       - vcluster_id
+      - test-sleep-after
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -171,6 +178,7 @@ jobs:
   test-template:
     needs:
       - vcluster_id
+      - test-disable-direct-cluster-endpoint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
