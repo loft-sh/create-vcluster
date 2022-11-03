@@ -11,6 +11,9 @@ inputs:
   cluster:
     required: false
     description: "The cluster to create the virtual cluster in"
+  project:
+    required: false
+    description: "The project to use"
   space:
     required: false
     description: "The space to create the virtual cluster in"
