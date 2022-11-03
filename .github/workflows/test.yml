@@ -1,4 +1,4 @@
-name: "build-test"
+name: build-test
 
 on:
   pull_request:
@@ -199,37 +199,3 @@ jobs:
                 version: '8.0'
       - run: loft list vclusters
       - run: loft delete vcluster template-${{ needs.vcluster_id.outputs.vcluster_id }} --delete-space
-
-  # Auto Approve passing Dependabot Patch & Minor PRs
-  auto-approve-dependabot:
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
-    needs:
-      - build
-      - test-auto-cleanup-default
-      - test-auto-cleanup-false
-      - test-auto-cleanup-true
-      - test-manual-cleanup-space-warning
-      - test-space
-      - test-delete-after
-      - test-sleep-after
-      - test-disable-direct-cluster-endpoint
-      - test-template
-    steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v1.3.1
-        with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-      - name: Approve the PR
-        if: ${{ steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor' }}
-        run: gh pr review --approve "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Auto-merge the PR
-        if: ${{ steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor' }}
-        run: gh pr merge --auto --merge "$PR_URL"
-        env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
