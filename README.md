@@ -43,6 +43,7 @@ The following inputs can be used as `step.with` keys
 | `name`              | String   | The name of the virtual cluster to create
 | `account`           | String   | The cluster account to create the virtual cluster with if it doesn't exist
 | `cluster`           | String   | The cluster to create the virtual cluster in
+| `project`           | String   | The project to use (requires Loft 3.0 and above)
 | `space`             | String    | The space to create the virtual cluster in
 | `delete-after`      | Number   | If set to non zero, will tell loft to delete the space after specified seconds of inactivity
 | `sleep-after`       | Number   | If set to non zero, will tell the space to sleep after specified seconds of inactivity
