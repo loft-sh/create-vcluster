@@ -134,6 +134,9 @@ function run() {
             args.add('team', core.getInput('team'));
             args.add('user', core.getInput('user'));
             args.add('template', core.getInput('template'));
+            if (isUseSupported(loftVersion)) {
+                args.add('use', core.getInput('use'));
+            }
             const parameters = core.getInput('parameters');
             if (parameters !== '') {
                 const tmpDir = yield mkdtemp(path_1.default.join((0, os_1.tmpdir)(), 'loft-'));
@@ -164,6 +167,13 @@ function isProjectSupported(version) {
         return false;
     }
     return (0, semver_1.satisfies)(coerced, '^3.0.0');
+}
+function isUseSupported(version) {
+    const coerced = (0, semver_1.coerce)(version);
+    if (coerced == null) {
+        return false;
+    }
+    return (0, semver_1.satisfies)(coerced, '>= 3.0.0-alpha.5', { includePrerelease: true });
 }
 run();
 
