@@ -42,6 +42,10 @@ async function run(): Promise<void> {
     args.add('user', core.getInput('user'))
     args.add('template', core.getInput('template'))
 
+    if (isUseSupported(loftVersion)) {
+      args.add('use', core.getInput('use'))
+    }
+
     const parameters = core.getInput('parameters')
     if (parameters !== '') {
       const tmpDir = await mkdtemp(path.join(tmpdir(), 'loft-'))
@@ -71,6 +75,14 @@ function isProjectSupported(version: string): boolean {
     return false
   }
   return satisfies(coerced, '^3.0.0')
+}
+
+function isUseSupported(version: string): boolean {
+  const coerced = coerce(version)
+  if (coerced == null) {
+    return false
+  }
+  return satisfies(coerced, '>= 3.0.0-alpha.5', {includePrerelease: true})
 }
 
 run()
