@@ -28,13 +28,13 @@ inputs:
     description: "When enabled does not use an available direct cluster endpoint to connect to the vcluster"
   team:
     required: false
-    description: "The team to create the space for"
-  template:
-    required: false
-    description: "The space template to use to create the space"
+    description: "The team to create the virtual cluster for"
   user:
     required: false
-    description: "The user to create the space for"
+    description: "The user to create the virtual cluster for"
+  template:
+    required: false
+    description: "The virtual cluster template to use to create the virtual cluster"
   parameters:
     required: false
     description: "Embedded YAML array of App Parameters. The contents of this input will be written to a file and passed to the Loft CLI"
