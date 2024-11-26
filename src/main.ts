@@ -14,52 +14,96 @@ async function run(): Promise<void> {
   try {
     const name: string = core.getInput('name', {required: true})
 
-    // Check that the loft CLI is installed
-    await which('loft', true)
-
-    // Check that the loft CLI supports projects
-    const project: string = core.getInput('project')
-    const loftVersion = await getLoftVersion()
-    if (project !== '' && !isProjectSupported(loftVersion)) {
-      throw new Error(`Project input requires Loft CLI version 3.0 and above`)
+    let loftCLIMissing = true
+    try {
+      // Check that the loft CLI is installed
+      await which('loft', true)
+      loftCLIMissing = false
+      await runUsingLoft(name)
+      return
+    } catch (error) {
+      if (!loftCLIMissing) {
+        throw error
+      }
     }
 
-    const args: ArgsBuilder = new ArgsBuilder()
-    args.addSubcommand('create')
-    args.addSubcommand('vcluster')
-    args.addSubcommand(name)
-    args.add('account', core.getInput('account'))
-    args.add('cluster', core.getInput('cluster'))
-    args.add('project', project)
-    args.add('space', core.getInput('space'))
-    args.addNumeric('delete-after', core.getInput('delete-after'))
-    args.addNumeric('sleep-after', core.getInput('sleep-after'))
-    args.addFlag(
-      'disable-direct-cluster-endpoint',
-      core.getInput('disable-direct-cluster-endpoint')
-    )
-    args.add('team', core.getInput('team'))
-    args.add('user', core.getInput('user'))
-    args.add('template', core.getInput('template'))
-
-    if (isUseSupported(loftVersion)) {
-      args.add('use', core.getInput('use'))
-    }
-
-    const parameters = core.getInput('parameters')
-    if (parameters !== '') {
-      const tmpDir = await mkdtemp(path.join(tmpdir(), 'loft-'))
-      const parametersFile = path.join(tmpDir, 'parameters.yaml')
-      await writeFile(parametersFile, parameters)
-      args.add('parameters', parametersFile)
-    }
-
-    await exec('loft', args.build())
+    // Check that the vCluster CLI is installed
+    await which('vcluster', true)
+    await runUsingVCluster(name)
   } catch (error: unknown) {
     if (error instanceof Error) {
       core.setFailed(error.message)
     }
   }
+}
+
+async function runUsingVCluster(name: string): Promise<number> {
+  // Check that the loft CLI supports projects
+  const project: string = core.getInput('project')
+
+  const args: ArgsBuilder = new ArgsBuilder()
+  args.addSubcommand('platform')
+  args.addSubcommand('create')
+  args.addSubcommand('vcluster')
+  args.addSubcommand(name)
+  args.add('cluster', core.getInput('cluster'))
+  args.add('project', project)
+  args.add('namespace', core.getInput('space'))
+  args.add('team', core.getInput('team'))
+  args.add('user', core.getInput('user'))
+  args.add('template', core.getInput('template'))
+  args.add('use', core.getInput('use'))
+
+  const parameters = core.getInput('parameters')
+  if (parameters !== '') {
+    const tmpDir = await mkdtemp(path.join(tmpdir(), 'loft-'))
+    const parametersFile = path.join(tmpDir, 'parameters.yaml')
+    await writeFile(parametersFile, parameters)
+    args.add('parameters', parametersFile)
+  }
+
+  return await exec('vcluster', args.build())
+}
+
+async function runUsingLoft(name: string): Promise<number> {
+  // Check that the loft CLI supports projects
+  const project: string = core.getInput('project')
+  const loftVersion = await getLoftVersion()
+  if (project !== '' && !isProjectSupported(loftVersion)) {
+    throw new Error(`Project input requires Loft CLI version 3.0 and above`)
+  }
+
+  const args: ArgsBuilder = new ArgsBuilder()
+  args.addSubcommand('create')
+  args.addSubcommand('vcluster')
+  args.addSubcommand(name)
+  args.add('account', core.getInput('account'))
+  args.add('cluster', core.getInput('cluster'))
+  args.add('project', project)
+  args.add('space', core.getInput('space'))
+  args.addNumeric('delete-after', core.getInput('delete-after'))
+  args.addNumeric('sleep-after', core.getInput('sleep-after'))
+  args.addFlag(
+    'disable-direct-cluster-endpoint',
+    core.getInput('disable-direct-cluster-endpoint')
+  )
+  args.add('team', core.getInput('team'))
+  args.add('user', core.getInput('user'))
+  args.add('template', core.getInput('template'))
+
+  if (isUseSupported(loftVersion)) {
+    args.add('use', core.getInput('use'))
+  }
+
+  const parameters = core.getInput('parameters')
+  if (parameters !== '') {
+    const tmpDir = await mkdtemp(path.join(tmpdir(), 'loft-'))
+    const parametersFile = path.join(tmpDir, 'parameters.yaml')
+    await writeFile(parametersFile, parameters)
+    args.add('parameters', parametersFile)
+  }
+
+  return await exec('loft', args.build())
 }
 
 async function getLoftVersion(): Promise<string> {
