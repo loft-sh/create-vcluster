@@ -1,5 +1,5 @@
-name: "Create Loft VCluster"
-description: "GitHub Action to create a Loft VCluster"
+name: "Create vCluster Platform vCluster"
+description: "GitHub Action to create a vCluster Platform-managed vCluster"
 author: loft.sh
 inputs:
   name:
@@ -19,7 +19,7 @@ inputs:
     description: "The space to create the virtual cluster in"
   delete-after:
     required: false
-    description: "If set to non zero, will tell loft to delete the space after specified seconds of inactivity"
+    description: "If set to non zero, will tell vCluster Platform to delete the space after specified seconds of inactivity"
   sleep-after:
     required: false
     description: "If set to non zero, will tell the space to sleep after specified seconds of inactivity"
@@ -37,7 +37,7 @@ inputs:
     description: "The virtual cluster template to use to create the virtual cluster"
   parameters:
     required: false
-    description: "Embedded YAML array of App Parameters. The contents of this input will be written to a file and passed to the Loft CLI"
+    description: "Embedded YAML array of App Parameters. The contents of this input will be written to a file and passed to the vcluster CLI"
   auto-cleanup:
     required: false
     description: "Delete the virtual cluster after the job run (default false)"
@@ -47,9 +47,9 @@ inputs:
     description: "Delete the space after the job run (default to same value as auto-cleanup)"
   use:
     required: false
-    description: "If loft should use the virtual cluster if its already there"
+    description: "If vCluster Platform should use the virtual cluster if its already there"
     default: "false"
 runs:
-  using: "node12"
+  using: "node20"
   main: "dist/main/index.js"
   post: "dist/post/index.js"

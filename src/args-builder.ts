@@ -23,7 +23,7 @@ export class ArgsBuilder {
       }
 
       this._args.push(`--${name}`)
-    } catch (error) {
+    } catch {
       throw new Error(`${name} must be true or false`)
     }
   }
