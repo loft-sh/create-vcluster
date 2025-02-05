@@ -52,7 +52,7 @@ async function runUsingVCluster(name: string): Promise<number> {
   args.add('namespace', core.getInput('space'))
   args.addFlag('delete-context', true)
   args.add('project', core.getInput('project'))
-  return await exec('loft', args.build())
+  return await exec('vcluster', args.build())
 }
 
 async function runUsingLoft(

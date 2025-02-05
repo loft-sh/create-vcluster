@@ -157,7 +157,7 @@ function runUsingVCluster(name) {
         args.add('namespace', core.getInput('space'));
         args.addFlag('delete-context', true);
         args.add('project', core.getInput('project'));
-        return yield (0, exec_1.exec)('loft', args.build());
+        return yield (0, exec_1.exec)('vcluster', args.build());
     });
 }
 function runUsingLoft(name, autoCleanupSpace) {
